@@ -1,0 +1,23 @@
+import json
+
+def lambda_handler(event, context):
+    #TODO1: Get your data
+    #event payload provides the necessary data.  The client is programmed to only provide what is necessary
+    #based on lab instructions.  This is, from each row, timestamp, CO2 reading, and vehicle id.
+    #TODO cut the vehicle id out if we can somehow get that piece of information from the message header? Saves bandwidth
+    print("test")
+    readings = event
+
+    #TODO2: Calculate max CO2 emission (dictionary comprehension gets the row with the max CO2 reading)
+    maxCO2row = max(readings, key=lambda item:item['vehicle_CO2'])
+
+    #parse resulting dictionary of max CO2 value with accompanying data into variables.  Will put these into sql database
+    maxCO2reading = maxCO2row['vehicle_CO2']
+    vehicle = maxCO2row['vehicle_id']
+    time = maxCO2row['timestep_time']
+
+    #TODO3: Return the result
+    #Each vehicle should only be subscribed to its own topic
+    #client.publish(topic="cars/" + vehicle + "/report", payload=json.dumps(maxCO2row))
+
+    return maxCO2row

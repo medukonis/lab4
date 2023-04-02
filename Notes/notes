@@ -1,0 +1,20 @@
+#cars/+/report/trigger
+
+hello/world/counter/trigger
+hello/world/counter
+
+import json
+
+print('Loading function')
+
+
+def lambda_handler(event, context):
+    #print("Received event: " + json.dumps(event, indent=2))
+    print("value1 = " + event['key1'])
+    print("value2 = " + event['key2'])
+    print("value3 = " + event['key3'])
+    return event['key1']  # Echo back the first key value
+    #raise Exception('Something went wrong')
+
+    aws greengrassv2 list-effective-deployments --core-device-thing-name GreengrassQuickStartCore-1871d8261ea
+    aws greengrassv2 get-deployment --deployment-id fb78dc59-d20e-4427-a88e-4fe43d51bba7

@@ -1,0 +1,36 @@
+import json
+import boto3
+from datetime import datetime
+
+def lambda_handler(event, context):
+    # Create an SNS client to send notification
+    #TODO1: Get your data
+    #event payload provides the necessary data.  The client is programmed to only provide what is necessary
+    #based on lab instructions.  This is, from each row, timestamp, CO2 reading, and vehicle id.
+    #TODO cut the vehicle id out if we can somehow get that piece of information from the message header? Saves bandwidth
+    readings = event
+    db = boto3.client('dynamodb')
+
+    dtime = datetime.now()
+    dtimestamp = dtime.timestamp()
+    time_ms = round(dtimestamp * 1000)
+
+    #TODO2: Calculate max CO2 emission (dictionary comprehension gets the row with the max CO2 reading)
+    maxCO2row = max(readings, key=lambda item:item['vehicle_CO2'])
+
+    #parse resulting dictionary of max CO2 value with accompanying data into variables.  Will put these into sql database
+    maxCO2reading = maxCO2row['vehicle_CO2']
+    vehicle = maxCO2row['vehicle_id']
+    time = maxCO2row['timestep_time']
+    response = db.put_item(TableName='emissions', Item={'id':{'N': str(time_ms)},'time':{'N':str(time)}, 'co2':{'N':str(maxCO2reading)}, 'vehicle':{'S':vehicle}, 'readings_dict':{'S': str(maxCO2row)}})
+
+    #TODO3: Return the result
+    #Each vehicle should only be subscribed to its own topic
+    #client.publish(topic="cars/" + vehicle + "/report", payload=json.dumps(maxCO2row))
+
+    #client = boto3.client('iot-data', region_name='us-east-1')
+
+    # Change topic, qos and payload
+    #response = client.publish(topic="cars/veh4/report",payload=json.dumps({"foo":"bar"}))
+
+    return response
